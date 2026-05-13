@@ -29,14 +29,15 @@ def escolher_opcao():
         case 2:
             gerar_voucher()
         case 3:
-            print('teste')
+            mostrar_historico()
         case 4:
             print('teste')
         case 5:
-            print('Finalizando o Soul Pass...')
+            print('\nFinalizando o Soul Pass...')
             finalizar_app()
         case _:
             print('Digite uma Opção válida.')
+            voltar_ao_menu_principal()
 
 def finalizar_app():
     print('Obrigado por utilizar o Soul Pass')
@@ -116,7 +117,22 @@ def gerar_voucher():
 
     voltar_ao_menu_principal()
 
-# def mostrar_historico():
+def mostrar_historico():
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    print('HISTÓRICO DE CONVERSÕES\n')
+    
+    if len(historico) == 0:
+        print('Nenhuma conversão foi realizada.')
+    else:
+        for dado in historico:
+            print(f'\nPONTOS UTILIZADOS: {dado['pontos_utilizados']}')
+            print(f'VOUCHERS GERADOS: {dado['vouchers_gerados']}')
+            print(f'VALOR TOTAL: {dado['valor_total']}')
+            print('\n============================================\n')
+    
+    voltar_ao_menu_principal()
 
 # def mostrar_impacto():
 
