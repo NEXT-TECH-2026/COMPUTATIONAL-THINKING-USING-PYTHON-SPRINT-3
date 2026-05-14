@@ -31,7 +31,7 @@ def escolher_opcao():
         case 3:
             mostrar_historico()
         case 4:
-            print('teste')
+            mostrar_impacto()
         case 5:
             print('\nFinalizando o Soul Pass...')
             finalizar_app()
@@ -126,15 +126,31 @@ def mostrar_historico():
     if len(historico) == 0:
         print('Nenhuma conversão foi realizada.')
     else:
-        for dado in historico:
-            print(f'\nPONTOS UTILIZADOS: {dado['pontos_utilizados']}')
-            print(f'VOUCHERS GERADOS: {dado['vouchers_gerados']}')
-            print(f'VALOR TOTAL: {dado['valor_total']}')
+        for conversao in historico:
+            print(f"\nPONTOS UTILIZADOS: {conversao['pontos_utilizados']}")
+            print(f"VOUCHERS GERADOS: {conversao['vouchers_gerados']}")
+            print(f"VALOR TOTAL: {conversao['valor_total']}")
             print('\n============================================\n')
     
     voltar_ao_menu_principal()
 
-# def mostrar_impacto():
+def mostrar_impacto():
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    print('IMPACTO AMBIENTAL\n')
+
+    total_vouchers = 0
+
+    for conversao in historico:
+        total_vouchers += conversao['vouchers_gerados']
+
+    co2_evitado = total_vouchers * 1.2
+
+    print(f'Total de vouchers gerados: {total_vouchers}')
+    print(f'CO₂ evitado estimado: {co2_evitado:.2f} kg')
+
+    voltar_ao_menu_principal()
 
 
 # Variáveis globais
