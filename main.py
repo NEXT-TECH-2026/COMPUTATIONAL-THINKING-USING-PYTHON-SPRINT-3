@@ -152,11 +152,67 @@ def mostrar_impacto():
 
     voltar_ao_menu_principal()
 
+#CRUD PARA CRIAR A CONTA DO CLIENTE
+def buscar_cliente(lista_clientes, cpf):
+    indice = -1
+    for i in range(len(lista_clientes)):
+        if (cpf == lista_clientes[i]['CPF']):
+            indice = i
+    return indice
+
+def validar_usuario_senha(lista_clientes, usuario, senha):
+    indice = -1
+    for i in range(len(lista_clientes)):
+        if (usuario == lista_clientes[i]['Usuário'] or senha == lista_clientes[i]['Senha']):
+            indice = i
+    return indice
+
+def cadastrar_cliente(lista_clientes):
+    try:
+        cpf = int(input("Digite o seu CPF para iniciar o seu cadastro: "))
+        indice = buscar_cliente(lista_clientes, cpf)
+        while(indice != -1):
+            cpf = int(input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, é necessário informar um CPF que ainda não foi cadastrado."))
+            indice = buscar_cliente(lista_clientes, cpf)
+        id += 1
+        nome = input("Digite o seu nome: ")
+        usuario = input("Digite o nome de usuario que deseja criar: ")
+        senha = input("Digite a senha que deseja criar: ")
+        indice = validar_usuario_senha(lista_clientes, usuario, senha)
+        while(indice != -1):
+            print("O nome de usuário ou a senha informada já existe!")
+            usuario = input("Digite o nome de usuario que deseja criar: ")
+            senha = input("Digite a senha que deseja criar: ")
+            validar_usuario_senha(lista_clientes, usuario, senha)
+        idade = int(input("Digite a sua idade: "))
+    except ValueError:
+        print("Os dados de idade e CPF devem ser escritos com números!!!")
+    else:
+        dados_cliente = {
+            'id': id,
+            'Nome': nome,
+            'Usuário': usuario,
+            'Senha': senha,
+            'Idade': idade,
+            'CPF': cpf
+        }
+        lista_clientes.append(dados_cliente)
+        print("O cadastro foi finalizado! Agora você pode acessar a nossa plataforma com a sua conta!")
+
+# def alterar_cliente(lista_clientes, cpf):
+#     try:
+#         print(f"O nome do cliente é: {lista_clientes[cpf]['Nome']}")
+#         novo_nome = input("Digite o novo nome do cliente: ")
+#         print(f"O usuário")
+#     except ValueError:
+
 
 # Variáveis globais
-pontos = float(input('Informe a quantidade de pontos: '))
+# pontos = float(input('Informe a quantidade de pontos: '))
 quantidade_vouchers = 0
 historico = []
+lista_clientes = []
+cpf = int(input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, é necessário informar um CPF que ainda não foi cadastrado."))
 
 # Chamada principal
 main()
