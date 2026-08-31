@@ -1,4 +1,5 @@
 ﻿import os
+from datetime import datetime, date
 
 def exibir_nome_soulpass():
     print(r"""
@@ -160,31 +161,54 @@ def buscar_cliente(lista_clientes, cpf):
             indice = i
     return indice
 
-def validar_usuario_senha(lista_clientes, usuario, senha):
+def validar_usuario(lista_clientes, usuario):
     indice = -1
     for i in range(len(lista_clientes)):
-        if (usuario == lista_clientes[i]['Usuário'] or senha == lista_clientes[i]['Senha']):
+        if (usuario == lista_clientes[i]['Usuário']):
             indice = i
     return indice
+
+def validar_senha(lista_clientes, senha):
+    indice = -1
+    for i in range(len(lista_clientes)):
+        if (senha == lista_clientes[i]['Senha']):
+            indice = i
+    return indice
+
+def calcular_idade(data_nascimento: date):
+    hoje = date.today()
+    idade = hoje.year - data_nascimento.year
+    if (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day):
+        idade -= 1
+    return idade
 
 def cadastrar_cliente(lista_clientes):
     try:
         cpf = int(input("Digite o seu CPF para iniciar o seu cadastro: "))
         indice = buscar_cliente(lista_clientes, cpf)
         while(indice != -1):
-            cpf = int(input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, é necessário informar um CPF que ainda não foi cadastrado."))
+            cpf = int(input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, informe um CPF que ainda não foi cadastrado:"))
             indice = buscar_cliente(lista_clientes, cpf)
         id += 1
         nome = input("Digite o seu nome: ")
         usuario = input("Digite o nome de usuario que deseja criar: ")
-        senha = input("Digite a senha que deseja criar: ")
-        indice = validar_usuario_senha(lista_clientes, usuario, senha)
+        indice = validar_usuario(lista_clientes, usuario)
         while(indice != -1):
-            print("O nome de usuário ou a senha informada já existe!")
-            usuario = input("Digite o nome de usuario que deseja criar: ")
-            senha = input("Digite a senha que deseja criar: ")
-            validar_usuario_senha(lista_clientes, usuario, senha)
-        idade = int(input("Digite a sua idade: "))
+            usuario = input("O nome de usuário informado já existe, digite um nome de usuário que não está em uso: ")
+            indice = validar_usuario(lista_clientes, usuario)
+        senha = input("Digite a senha que deseja criar: ")
+        indice = validar_senha(lista_clientes, senha)
+        while(indice != -1):
+            senha = input("A senha informada já existe, digite uma senha que não está em uso: ")
+            indice = validar_senha(lista_clientes, senha)
+        data_digitada = input("Digite a sua data de nascimento: ")
+        data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
+        idade = calcular_idade(data_nascimento)
+        while(idade < 18):
+            print("Você precisa ter no mínimo 18 anos para realizar o cadastro!")
+            data_digitada = input("Digite a sua data de nascimento: ")
+            data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
+            idade = calcular_idade(data_nascimento)
     except ValueError:
         print("Os dados de idade e CPF devem ser escritos com números!!!")
     else:
@@ -199,20 +223,25 @@ def cadastrar_cliente(lista_clientes):
         lista_clientes.append(dados_cliente)
         print("O cadastro foi finalizado! Agora você pode acessar a nossa plataforma com a sua conta!")
 
-# def alterar_cliente(lista_clientes, cpf):
-#     try:
-#         print(f"O nome do cliente é: {lista_clientes[cpf]['Nome']}")
-#         novo_nome = input("Digite o novo nome do cliente: ")
-#         print(f"O usuário")
-#     except ValueError:
+def alterar_cliente(lista_clientes, cpf):
+    try:
+        print(f"O nome do cliente é: {lista_clientes[cpf]['Nome']}")
+        novo_nome = input("Digite o novo nome do cliente: ")
+        print(f"A senha do cliente é: {lista_clientes[cpf]['Senha']}")
+        nova_senha = input("Digite a nova senha do cliente: ")
+        indice = validar_senha(lista_clientes, nova_senha)
+        while(indice != -1):
+            nova_senha = input("A senha informada já existe, digite uma senha que não está em uso: ")
+            indice = validar_senha(lista_clientes, nova_senha)
+    except ValueError:
+        print("Os dados de idade e CPF devem ser escritos com números!!!")
 
 
 # Variáveis globais
-# pontos = float(input('Informe a quantidade de pontos: '))
+pontos = float(input('Informe a quantidade de pontos: '))
 quantidade_vouchers = 0
 historico = []
 lista_clientes = []
-cpf = int(input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, é necessário informar um CPF que ainda não foi cadastrado."))
 
 # Chamada principal
 main()
