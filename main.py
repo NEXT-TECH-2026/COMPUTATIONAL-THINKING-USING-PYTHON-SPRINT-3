@@ -24,9 +24,10 @@ def opcoes():
     print('2 - GERAR VOUCHER')
     print('3 - VER HISTÓRICO DE CONVERSÕES')
     print('4 - VER IMPACTO AMBIENTAL')
-    print('5 - Alterar dados cadastrais')
-    print('6 - Excluir conta')
-    print('7 - SAIR')
+    print('5 - Cadastrar outra conta')
+    print('6 - Alterar dados cadastrais')
+    print('7 - Excluir conta')
+    print('8 - SAIR')
 
 
 def escolher_opcao():
@@ -44,16 +45,18 @@ def escolher_opcao():
             mostrar_historico()
         case 4:
             mostrar_impacto()
-        case 5:
+        case 5: 
+            cadastrar_cliente(lista_clientes)
+        case 6:
             cpf = input("Digite seu cpf: ")
             indice = buscar_cliente(lista_clientes, cpf)
             if (indice != -1):
                 alterar_cliente(lista_clientes, indice)
             else:
                 print("CPF não encontrado.")
-        case 6:
-            excluir_cliente(lista_clientes, indice)        
         case 7:
+            excluir_cliente(lista_clientes, indice)        
+        case 8:
             print('\nFinalizando o Soul Pass...')
             finalizar_app()
         case _:
@@ -222,11 +225,14 @@ def cadastrar_cliente(lista_clientes):
         data_digitada = input("Digite a sua data de nascimento (dd/mm/aaaa): ")
         data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
         idade = calcular_idade(data_nascimento)
-        while(idade < 18):
+        if(idade < 18):
             print("Você precisa ter no mínimo 18 anos para realizar o cadastro!")
-            data_digitada = input("Digite a sua data de nascimento: ")
-            data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
-            idade = calcular_idade(data_nascimento)
+            return
+        # while(idade < 18):
+        #     print("Você precisa ter no mínimo 18 anos para realizar o cadastro!")
+        #     data_digitada = input("Digite a sua data de nascimento: ")
+        #     data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
+        #     idade = calcular_idade(data_nascimento)
     except ValueError:
         print("O CPF e data de nascimento devem ser escritos com números!!!")
     else:
@@ -267,7 +273,7 @@ def excluir_cliente(lista_clientes, indice):
 
 
 # Variáveis globais
-# pontos = float(input('Informe a quantidade de pontos: '))
+pontos = float(input('Informe a quantidade de pontos: '))
 quantidade_vouchers = 0
 historico = []
 lista_clientes = []
@@ -275,6 +281,7 @@ lista_clientes = []
 opcao_cadastro = 0
 
 while (opcao_cadastro != 3):
+    print("*****ENTRE NA SUA CONTA*****")
     print("1 - Já sou cadastrado!")
     print("2 - Ainda não sou cadastrado")
     print("3 - Sair")
