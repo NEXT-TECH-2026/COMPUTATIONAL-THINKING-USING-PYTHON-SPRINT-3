@@ -11,6 +11,12 @@ def exibir_nome_soulpass():
                                            
 """)
 
+def main():
+    os.system('cls')
+    exibir_nome_soulpass()
+    opcoes()
+    escolher_opcao()
+
 
 # Funções de Navegação
 def opcoes():
@@ -18,11 +24,16 @@ def opcoes():
     print('2 - GERAR VOUCHER')
     print('3 - VER HISTÓRICO DE CONVERSÕES')
     print('4 - VER IMPACTO AMBIENTAL')
-    print('5 - SAIR')
+    print('5 - Alterar dados cadastrais')
+    print('6 - Excluir conta')
+    print('7 - SAIR')
 
 
 def escolher_opcao():
-    escolha = int(input('Escolha uma opção: '))
+    try:
+        escolha = int(input('Escolha uma opção: '))
+    except:
+        print("Digite um número válido!")
 
     match escolha:
         case 1:
@@ -34,6 +45,15 @@ def escolher_opcao():
         case 4:
             mostrar_impacto()
         case 5:
+            cpf = input("Digite seu cpf: ")
+            indice = buscar_cliente(lista_clientes, cpf)
+            if (indice != -1):
+                alterar_cliente(lista_clientes, indice)
+            else:
+                print("CPF não encontrado.")
+        case 6:
+            excluir_cliente(lista_clientes, indice)        
+        case 7:
             print('\nFinalizando o Soul Pass...')
             finalizar_app()
         case _:
@@ -46,12 +66,6 @@ def finalizar_app():
 def voltar_ao_menu_principal():
     input('\nDigite uma tecla para voltar ao menu ')
     main()
-
-def main():
-    os.system('cls')
-    exibir_nome_soulpass()
-    opcoes()
-    escolher_opcao()
 
 # Funcões Principais
 
@@ -159,21 +173,24 @@ def buscar_cliente(lista_clientes, cpf):
     for i in range(len(lista_clientes)):
         if (cpf == lista_clientes[i]['CPF']):
             indice = i
+            break
     return indice
 
 def validar_usuario(lista_clientes, usuario):
-    indice = -1
+    indice_usuario = -1
     for i in range(len(lista_clientes)):
         if (usuario == lista_clientes[i]['Usuário']):
-            indice = i
-    return indice
+            indice_usuario = i
+            break
+    return indice_usuario
 
 def validar_senha(lista_clientes, senha):
-    indice = -1
+    indice_senha = -1
     for i in range(len(lista_clientes)):
         if (senha == lista_clientes[i]['Senha']):
-            indice = i
-    return indice
+            indice_senha = i
+            break
+    return indice_senha
 
 def calcular_idade(data_nascimento: date):
     hoje = date.today()
@@ -184,24 +201,25 @@ def calcular_idade(data_nascimento: date):
 
 def cadastrar_cliente(lista_clientes):
     try:
-        cpf = int(input("Digite o seu CPF para iniciar o seu cadastro: "))
+        cpf = input("Digite o seu CPF para iniciar o seu cadastro: ")
         indice = buscar_cliente(lista_clientes, cpf)
         while(indice != -1):
-            cpf = int(input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, informe um CPF que ainda não foi cadastrado:"))
+            cpf = input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, informe um CPF que ainda não foi cadastrado:")
             indice = buscar_cliente(lista_clientes, cpf)
-        id += 1
+        id = len(lista_clientes)
         nome = input("Digite o seu nome: ")
+        email = input("Digite o seu email: ")
         usuario = input("Digite o nome de usuario que deseja criar: ")
-        indice = validar_usuario(lista_clientes, usuario)
-        while(indice != -1):
+        indice_usuario = validar_usuario(lista_clientes, usuario)
+        while(indice_usuario != -1):
             usuario = input("O nome de usuário informado já existe, digite um nome de usuário que não está em uso: ")
-            indice = validar_usuario(lista_clientes, usuario)
+            indice_usuario = validar_usuario(lista_clientes, usuario)
         senha = input("Digite a senha que deseja criar: ")
-        indice = validar_senha(lista_clientes, senha)
-        while(indice != -1):
+        indice_senha = validar_senha(lista_clientes, senha)
+        while(indice_senha != -1):
             senha = input("A senha informada já existe, digite uma senha que não está em uso: ")
-            indice = validar_senha(lista_clientes, senha)
-        data_digitada = input("Digite a sua data de nascimento: ")
+            indice_senha = validar_senha(lista_clientes, senha)
+        data_digitada = input("Digite a sua data de nascimento (dd/mm/aaaa): ")
         data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
         idade = calcular_idade(data_nascimento)
         while(idade < 18):
@@ -210,11 +228,12 @@ def cadastrar_cliente(lista_clientes):
             data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
             idade = calcular_idade(data_nascimento)
     except ValueError:
-        print("Os dados de idade e CPF devem ser escritos com números!!!")
+        print("O CPF e data de nascimento devem ser escritos com números!!!")
     else:
         dados_cliente = {
             'id': id,
             'Nome': nome,
+            'Email': email,
             'Usuário': usuario,
             'Senha': senha,
             'Idade': idade,
@@ -223,25 +242,57 @@ def cadastrar_cliente(lista_clientes):
         lista_clientes.append(dados_cliente)
         print("O cadastro foi finalizado! Agora você pode acessar a nossa plataforma com a sua conta!")
 
-def alterar_cliente(lista_clientes, cpf):
-    try:
-        print(f"O nome do cliente é: {lista_clientes[cpf]['Nome']}")
+def alterar_cliente(lista_clientes, indice):
+        #Resgatando novos valores
+        print(f"O nome do cliente é: {lista_clientes[indice]['Nome']}")
         novo_nome = input("Digite o novo nome do cliente: ")
-        print(f"A senha do cliente é: {lista_clientes[cpf]['Senha']}")
+        print(f"O email do cliente é: {lista_clientes[indice]['Email']}")
+        novo_email = input("Digite o novo email do cliente: ")
+        print(f"A senha do cliente é: {lista_clientes[indice]['Senha']}")
         nova_senha = input("Digite a nova senha do cliente: ")
-        indice = validar_senha(lista_clientes, nova_senha)
-        while(indice != -1):
+        indice_senha = validar_senha(lista_clientes, nova_senha)
+        while(indice_senha != -1):
             nova_senha = input("A senha informada já existe, digite uma senha que não está em uso: ")
-            indice = validar_senha(lista_clientes, nova_senha)
-    except ValueError:
-        print("Os dados de idade e CPF devem ser escritos com números!!!")
+            indice_senha = validar_senha(lista_clientes, nova_senha)
+
+        #Alterando os dados
+        lista_clientes[indice]['Nome'] = novo_nome
+        lista_clientes[indice]['Email'] = novo_email
+        lista_clientes[indice]['Senha'] = nova_senha
+        print("Dados alterados com sucesso!")
+
+def excluir_cliente(lista_clientes, indice):
+    lista_clientes.pop(indice)
+    print("Cliente excluído!")
 
 
 # Variáveis globais
-pontos = float(input('Informe a quantidade de pontos: '))
+# pontos = float(input('Informe a quantidade de pontos: '))
 quantidade_vouchers = 0
 historico = []
 lista_clientes = []
 
-# Chamada principal
-main()
+opcao_cadastro = 0
+
+while (opcao_cadastro != 3):
+    print("1 - Já sou cadastrado!")
+    print("2 - Ainda não sou cadastrado")
+    print("3 - Sair")
+    opcao_cadastro = int(input("Digite a opção correspondente: "))
+    if (opcao_cadastro >= 1 and opcao_cadastro <= 3):
+        match opcao_cadastro:
+            case 1:
+                for i in range (3):
+                    usuario = input("Informe seu usuário: ")
+                    indice_usuario = validar_usuario(lista_clientes, usuario)
+                    senha = input("Digite a senha: ")
+                    indice_senha = validar_senha(lista_clientes, senha)
+                    if (indice_usuario != -1 and indice_usuario == indice_senha):
+                        main()
+                        break
+                    else:
+                        print(f"Usuário ou senha incorretos. Tente novamente, você ainda tem mais {2-i} tentativa(s)")
+            case 2:
+                cadastrar_cliente(lista_clientes)
+    else:
+        print("Opção inválida. Tente novamente!")
