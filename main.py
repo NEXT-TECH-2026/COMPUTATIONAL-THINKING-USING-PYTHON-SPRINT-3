@@ -12,6 +12,14 @@ def exibir_nome_soulpass():
                                            
 """)
 
+# <<< ALTERAÇÃO DE LAYOUT >>> Nova função para padronizar as mensagens de aviso
+def exibir_aviso(*linhas, largura=60):
+    print("\n" + "═" * largura)
+    for linha in linhas:
+        print(f" {linha}")
+    print("═" * largura + "\n")
+
+
 def main():
     os.system('cls')
     exibir_nome_soulpass()
@@ -68,20 +76,20 @@ def escolher_opcao():
                 opcao_cadastro = 0
                 validarCadastro(opcao_cadastro)
             elif (confirmar_exclusao == 2):
-                print("Exclusão não realizada!")
+                exibir_aviso("Exclusão não realizada!")  # <<< ALTERAÇÃO DE LAYOUT >>>
                 voltar_ao_menu_principal()
             else:
-                print("Opção inválida!")
+                exibir_aviso("Opção inválida!")  # <<< ALTERAÇÃO DE LAYOUT >>>
                 voltar_ao_menu_principal()
         case 8:
             print('\nFinalizando o Soul Pass...')
             finalizar_app()
         case _:
-            print('Digite uma Opção válida.')
+            exibir_aviso("Opção inválida! Digite um número correspondente a uma opção do menu.")  # <<< ALTERAÇÃO DE LAYOUT >>>
             voltar_ao_menu_principal()
 
 def finalizar_app():
-    print('Obrigado por utilizar o Soul Pass!\n')
+    exibir_aviso("Obrigado por utilizar o Soul Pass!")  # <<< ALTERAÇÃO DE LAYOUT >>>
     sys.exit()
 
 def voltar_ao_menu_principal():
@@ -113,21 +121,21 @@ def gerar_voucher():
 
     # Verifica se o usuário tem pontos suficientes
     if pontos < 600:
-        print('Você não possui pontos suficientes para gerar um voucher.')
+        exibir_aviso("Você não possui pontos suficientes para gerar um voucher.")  # <<< ALTERAÇÃO DE LAYOUT >>>
         voltar_ao_menu_principal()
         return
 
     quantidade = int(input('Quantos vouchers deseja gerar?(Digite apenas números inteiros): '))
 
     if quantidade <= 0:
-        print('Digite uma quantidade válida.')
+        exibir_aviso("Digite uma quantidade válida.")  # <<< ALTERAÇÃO DE LAYOUT >>>
         voltar_ao_menu_principal()
         return
 
     pontos_necessarios = quantidade * 600
 
     if pontos_necessarios > pontos:
-        print('Você não possui pontos suficientes.')
+        exibir_aviso("Você não possui pontos suficientes.")  # <<< ALTERAÇÃO DE LAYOUT >>>
         voltar_ao_menu_principal()
         return
 
@@ -146,10 +154,13 @@ def gerar_voucher():
 
     historico.append(conversao)
 
-    print('\nVoucher gerado com sucesso!')
-    print(f'Quantidade de vouchers: {quantidade}')
-    print(f'Valor total: R$ {valor_total:.2f}')
-    print(f'Pontos restantes: {pontos:.0f}')
+    # <<< ALTERAÇÃO DE LAYOUT >>> Bloco de sucesso agrupado em um único aviso
+    exibir_aviso(
+        "Voucher gerado com sucesso!",
+        f"Quantidade de vouchers: {quantidade}",
+        f"Valor total: R$ {valor_total:.2f}",
+        f"Pontos restantes: {pontos:.0f}"
+    )
 
     voltar_ao_menu_principal()
 
@@ -160,13 +171,15 @@ def mostrar_historico():
     print('HISTÓRICO DE CONVERSÕES\n')
     
     if len(historico) == 0:
-        print('Nenhuma conversão foi realizada.')
+        exibir_aviso("Nenhuma conversão foi realizada.")  # <<< ALTERAÇÃO DE LAYOUT >>>
     else:
         for conversao in historico:
-            print(f"\nPONTOS UTILIZADOS: {conversao['pontos_utilizados']}")
-            print(f"VOUCHERS GERADOS: {conversao['vouchers_gerados']}")
-            print(f"VALOR TOTAL: {conversao['valor_total']}")
-            print('\n============================================\n')
+            # <<< ALTERAÇÃO DE LAYOUT >>> Trocado o separador "====" por exibir_aviso
+            exibir_aviso(
+                f"PONTOS UTILIZADOS: {conversao['pontos_utilizados']}",
+                f"VOUCHERS GERADOS: {conversao['vouchers_gerados']}",
+                f"VALOR TOTAL: {conversao['valor_total']}"
+            )
     
     voltar_ao_menu_principal()
 
@@ -244,9 +257,8 @@ def cadastrar_cliente(lista_clientes):
         data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
         idade = calcular_idade(data_nascimento) 
         if(idade < 18):
-            print("--------------------------------------------------------------\n")
-            print("Você precisa ter no mínimo 18 anos para realizar o cadastro.\n")
-            print("--------------------------------------------------------------\n")
+            # <<< ALTERAÇÃO DE LAYOUT >>> Trocado o bloco de "-----" por exibir_aviso
+            exibir_aviso("Você precisa ter no mínimo 18 anos para realizar o cadastro.")
             return
         # while(idade < 18):
         #     print("Você precisa ter no mínimo 18 anos para realizar o cadastro!")
@@ -254,8 +266,8 @@ def cadastrar_cliente(lista_clientes):
         #     data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
         #     idade = calcular_idade(data_nascimento)
     except ValueError:
-        print("\n")
-        print("Data de nascimento inválida ou não foi escrita no formato dd/mm/aaaa. Tente novamente! \n")
+        # <<< ALTERAÇÃO DE LAYOUT >>>
+        exibir_aviso("Data de nascimento inválida ou não foi escrita no formato dd/mm/aaaa.", "Tente novamente!", largura=80)
     else:
         dados_cliente = {
             'id': id,
@@ -267,9 +279,8 @@ def cadastrar_cliente(lista_clientes):
             'CPF': cpf
         }
         lista_clientes.append(dados_cliente)
-        print("\n")
-        print("O cadastro foi finalizado! Agora você pode acessar a nossa plataforma com a sua conta!")
-        print("\n")
+        # <<< ALTERAÇÃO DE LAYOUT >>>
+        exibir_aviso("Cadastro finalizado com sucesso!", "Agora você pode acessar a nossa plataforma com a sua conta!")
 
 def alterar_cliente(lista_clientes, indice):
         #Resgatando novos valores
@@ -277,11 +288,10 @@ def alterar_cliente(lista_clientes, indice):
         novo_nome = input("Digite um novo nome: ")
         print(f"O seu email é: {lista_clientes[indice]['Email']}")
         novo_email = input("Digite um novo email: ")
+        senha = lista_clientes[indice]['Senha']
         confirmacao_senha = input("Confirme sua senha para alterá-la: ")
-        indice_senha = validar_senha(lista_clientes, confirmacao_senha)
-        while(indice_senha == -1):
+        while(confirmacao_senha != senha):
             confirmacao_senha = input(("Senha incorreta! Tente novamente: "))
-            indice_senha = validar_senha(lista_clientes, confirmacao_senha)
         nova_senha = input("Digite sua nova senha: ")
         indice_senha = validar_senha(lista_clientes, nova_senha)
         while(indice_senha != -1):
@@ -292,13 +302,11 @@ def alterar_cliente(lista_clientes, indice):
         lista_clientes[indice]['Nome'] = novo_nome
         lista_clientes[indice]['Email'] = novo_email
         lista_clientes[indice]['Senha'] = nova_senha
-        print("Dados alterados com sucesso!")
+        exibir_aviso("Dados alterados com sucesso!")  # <<< ALTERAÇÃO DE LAYOUT >>>
 
 def excluir_cliente(lista_clientes, indice):
     lista_clientes.pop(indice)
-    print("---------------------------\n")
-    print("Conta excluída com sucesso!\n")
-    print("---------------------------\n")
+    exibir_aviso("Conta excluída com sucesso!")  # <<< ALTERAÇÃO DE LAYOUT >>> (era o exemplo que você mandou)
 
 lista_clientes = []
 opcao_cadastro = 0
@@ -323,14 +331,15 @@ def validarCadastro(opcao_cadastro):
                             os.system('cls')
                             return 3
                         else:
-                            print(f"Usuário ou senha incorretos. Tente novamente, você ainda tem mais {2-i} tentativa(s)")
+                            # <<< ALTERAÇÃO DE LAYOUT >>>
+                            exibir_aviso("Usuário ou senha incorretos.", f"Você ainda tem mais {2-i} tentativa(s).")
                 case 2:
                     cadastrar_cliente(lista_clientes)
                 case 3:
                     print("Saindo...")
                     finalizar_app()
         else:
-            print("Opção inválida. Tente novamente!")
+            exibir_aviso("Opção inválida. Tente novamente!")  # <<< ALTERAÇÃO DE LAYOUT >>>
 
 
 # Variáveis globais
@@ -339,6 +348,3 @@ pontos = float(input('Informe a quantidade de pontos: '))
 quantidade_vouchers = 0
 historico = []
 main()
-
-
-
