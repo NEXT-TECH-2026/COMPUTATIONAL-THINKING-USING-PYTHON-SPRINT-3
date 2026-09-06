@@ -200,7 +200,7 @@ def gerar_arquivo_txt():
 
     print('GERAR ARQUIVO TXT\n')
 
-    if len(historico) == 0:
+    if not historico:
         print('Nenhuma conversão foi realizada por aqui.')
         voltar_ao_menu_principal()
         return
@@ -237,8 +237,6 @@ def gerar_arquivo_txt():
         )
 
         contador += 1
-
-    
 
     arquivo.close()
 
