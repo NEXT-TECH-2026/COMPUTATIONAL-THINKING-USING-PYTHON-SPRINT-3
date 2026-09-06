@@ -35,16 +35,14 @@ def opcoes():
     print('2 - GERAR VOUCHER')
     print('3 - VER HISTÓRICO DE CONVERSÕES')
     print('4 - VER IMPACTO AMBIENTAL')
-    print('5 - Cadastrar outra conta')
-    print('6 - Alterar dados cadastrais')
-    print('7 - Excluir conta')
-    print('8 - SAIR')
-    print('4 - GERAR RELATÓRIO DE VOUCHERS')
-    print('5 - GERAR ARQUIVO TXT')
-    print('6 - EXPORTAR DADOS PARA JSON')
-    print('7 - IMPORTAR DADOS DO JSON')
-    print('8 - VER IMPACTO AMBIENTAL')
-    print('9 - SAIR')
+    print('5 - CADASTRAR OUTRA CONTA')
+    print('6 - ALTERAR DADOS CADASTRAIS')
+    print('7 - EXCLUIR CONTA')
+    print('8 - GERAR RELATÓRIO DE VOUCHERS')
+    print('9 - IMPRIMIR NOTA FISCAL DAS CONVERSÕES')
+    print('10 - EXPORTAR DADOS PARA JSON')
+    print('11 - IMPORTAR DADOS DO JSON')
+    print('12 - SAIR')
 
 
 def escolher_opcao():
@@ -97,19 +95,16 @@ def escolher_opcao():
         case 8:
             gerar_relatorio()
 
-        case 5:
+        case 9:
             gerar_arquivo_txt()
 
-        case 6:
+        case 10:
             exportar_json()
 
-        case 7:
+        case 11:
             importar_json()
 
-        case 8:
-            mostrar_impacto()
-
-        case 9:
+        case 12:
             print('\nFinalizando o Soul Pass...')
             finalizar_app()
 
@@ -268,7 +263,7 @@ def gerar_arquivo_txt():
 
     arquivo.write('============================================\n')
     arquivo.write('              SOUL PASS\n')
-    arquivo.write('        RELATÓRIO DE VOUCHERS\n')
+    arquivo.write('             NOTA FISCAL\n')
     arquivo.write('============================================\n\n')
 
     contador = 1
@@ -295,8 +290,8 @@ def gerar_arquivo_txt():
 
     arquivo.close()
 
-    print('Arquivo TXT criado com sucesso!')
-    print('Nome do arquivo: relatorio_vouchers.txt')
+    print('Nota fiscal gerada com sucesso!')
+    print('Consulte no arquivo: relatorio_vouchers.txt')
 
     voltar_ao_menu_principal()
 
@@ -534,7 +529,8 @@ opcao_cadastro = 0
 
 def validarCadastro(opcao_cadastro):
     while (opcao_cadastro != 3):
-        print("*****ENTRE NA SUA CONTA*****")
+        exibir_nome_soulpass()
+        print("-----CADASTRO DE CONTA-----\n")
         print("1 - Já sou cadastrado!")
         print("2 - Ainda não sou cadastrado")
         print("3 - Sair")
