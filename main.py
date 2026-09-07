@@ -121,7 +121,10 @@ def escolher_opcao():
             importar_json()
 
         case 13:
-            confimacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
+            try:
+                confimacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
+            except ValueError:
+                exibir_aviso('Digite apenas números!')
             while(confimacao >= 1 and confimacao <= 3):
                 if (confimacao == 1):
                     exibir_aviso('Salvando...')
@@ -143,11 +146,11 @@ def escolher_opcao():
                     exibir_nome_soulpass()
                     finalizar_app()
                 elif(confimacao == 3):
-                    validarCadastro(opcao_cadastro=0)
-                else:
-                    print('Opção inválida! Tente novamente: ')
-                    finalizar_app()
-
+                    voltar_ao_menu_principal()
+            os.system('cls')        
+            exibir_nome_soulpass()
+            exibir_aviso('Opção inválida!')
+            voltar_ao_menu_principal()
         case _:
             exibir_aviso("Opção inválida! Digite um número correspondente a uma opção do menu.")  # <<< ALTERAÇÃO DE LAYOUT >>>
             voltar_ao_menu_principal()
@@ -319,7 +322,7 @@ def cadastrar_cliente(lista_clientes):
         while(indice != -1):
             cpf = input("O CPF informado já está associado a uma conta. Para iniciar o cadastro, informe um CPF que ainda não foi cadastrado:")
             indice = buscar_cliente(lista_clientes, cpf)
-        id = len(lista_clientes)
+        id = len(lista_clientes) + 1
         nome = input("Digite o seu nome: ")
         email = input("Digite o seu email: ")
         usuario = input("Digite o nome de usuario que deseja criar: ")
@@ -696,6 +699,7 @@ def verificar_conta_existente():
                 print('Entrando... \n')
                 time.sleep(2)
                 os.system('cls')
+                return
             else:
                 # <<< ALTERAÇÃO DE LAYOUT >>>
                 os.system('cls')
@@ -718,5 +722,6 @@ quantidade_vouchers = 0
 historico = []
 
 verificar_conta_existente()
+exibir_nome_soulpass()
 pontos = float(input('Informe a quantidade de pontos: '))
 main()
