@@ -89,8 +89,10 @@ def escolher_opcao():
             while(indice == -1):
                 senha = input("Senha inválida! Tente novamente: ")
                 indice = validar_senha(lista_clientes, senha)
-
-            confirmar_exclusao = int(input("Deseja realmente excluir sua conta (1 - Sim / 2 - Não): "))
+            try:
+                confirmar_exclusao = int(input("Deseja realmente excluir sua conta (1 - Sim / 2 - Não): "))
+            except ValueError:
+                exibir_aviso("Digite apenas números")
             if (confirmar_exclusao == 1):
                 excluir_cliente(lista_clientes, indice)
                 opcao_cadastro = 0
@@ -403,15 +405,17 @@ def relatorio_cadastro_cliente(lista_clientes, indice):
 
     exibir_aviso(' \n DADOS DE CADASTRO \n \n'
 
-    f'Nome -> {lista_clientes[indice]['Nome']} \n \n'
-    f'Email -> {lista_clientes[indice]['Email']} \n \n'
-    f'Usuário -> {lista_clientes[indice]['Usuário']} \n \n'
-    f'Senha -> {lista_clientes[indice]['Senha']} \n \n'
-    f'Idade -> {lista_clientes[indice]['Idade']} \n \n'
-    f'CPF -> {lista_clientes[indice]['CPF']} \n', largura=30)
+    f'Nome -> {lista_clientes[indice]["Nome"]} \n \n'
+    f'Email -> {lista_clientes[indice]["Email"]} \n \n'
+    f'Usuário -> {lista_clientes[indice]["Usuário"]} \n \n'
+    f'Senha -> {lista_clientes[indice]["Senha"]} \n \n'
+    f'Idade -> {lista_clientes[indice]["Idade"]} \n \n'
+    f'CPF -> {lista_clientes[indice]["CPF"]} \n', largura=30)
 
-    confirmar_alteracao = int(input('Deseja alterar os dados do cadastro (1 - SIM / 2 - NÃO)? '))
-
+    try:
+        confirmar_alteracao = int(input('Deseja alterar os dados do cadastro (1 - SIM / 2 - NÃO)? '))
+    except ValueError:
+        exibir_aviso('Digite apenas números!')
     if(confirmar_alteracao == 1):
         senha = input("Digite a sua senha para alterar os dados de cadastro: ")
         indice = validar_senha(lista_clientes, senha)
@@ -638,9 +642,12 @@ def validarCadastro(opcao_cadastro=0):
                 case 2:
                     cadastrar_cliente(lista_clientes)
                 case 3:
-                    confimacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
-                    while(confimacao >= 1 and confimacao <= 3):
-                        if (confimacao == 1):
+                    try:
+                        confirmacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
+                    except ValueError:
+                        exibir_aviso('Digite apenas números!')
+                    while(confirmacao >= 1 and confirmacao <= 3):
+                        if (confirmacao == 1):
                             exibir_aviso('Salvando...')
                             time.sleep(2)
                             exportar_json(mostrar_mensagens=False)
@@ -651,7 +658,7 @@ def validarCadastro(opcao_cadastro=0):
                             os.system('cls')
                             exibir_nome_soulpass()
                             finalizar_app()
-                        elif(confimacao == 2):
+                        elif(confirmacao == 2):
                             os.system('cls')
                             exibir_nome_soulpass()
                             exibir_aviso('Saindo sem salvar...')
@@ -659,7 +666,7 @@ def validarCadastro(opcao_cadastro=0):
                             os.system('cls')
                             exibir_nome_soulpass()
                             finalizar_app()
-                        elif(confimacao == 3):
+                        elif(confirmacao == 3):
                             validarCadastro(opcao_cadastro=0)
                         else:
                             print('Opção inválida! Tente novamente: ')
@@ -670,7 +677,10 @@ def validarCadastro(opcao_cadastro=0):
 def verificar_conta_existente():
     os.system('cls')
     exibir_nome_soulpass()
-    verificar_conta = int(input('Você já possui conta na SoulPass (1 - SIM / 2 - NÃO)? '))
+    try:
+        verificar_conta = int(input('Você já possui conta na SoulPass (1 - SIM / 2 - NÃO)? '))
+    except ValueError:
+        exibir_aviso('Digite apenas números!')
     if (verificar_conta == 1):
         importar_json(mostrar_mensagens=False)
         for i in range (3):
