@@ -2,6 +2,7 @@
 import sys
 from datetime import datetime, date
 import json
+import time
 
 
 def exibir_nome_soulpass():
@@ -38,11 +39,12 @@ def opcoes():
     print('5 - CADASTRAR OUTRA CONTA')
     print('6 - ALTERAR DADOS CADASTRAIS')
     print('7 - EXCLUIR CONTA')
-    print('8 - GERAR RELATÓRIO DE VOUCHERS')
-    print('9 - IMPRIMIR NOTA FISCAL DAS CONVERSÕES')
-    print('10 - EXPORTAR DADOS PARA JSON')
-    print('11 - IMPORTAR DADOS DO JSON')
-    print('12 - SAIR')
+    print('8 - VISUALIZAR DADOS DE CADASTRO')
+    print('9 - GERAR RELATÓRIO DE VOUCHERS')
+    print('10 - IMPRIMIR NOTA FISCAL DAS CONVERSÕES')
+    print('11 - EXPORTAR DADOS PARA JSON')
+    print('12 - IMPORTAR DADOS DO JSON')
+    print('13 - SAIR')
 
 
 def escolher_opcao():
@@ -71,16 +73,23 @@ def escolher_opcao():
             validarCadastro(opcao_cadastro)
             main()
         case 6:
-            cpf = input("Digite seu cpf: ")
-            indice = buscar_cliente(lista_clientes, cpf)
+            senha = input("Digite a sua senha para alterar os dados de cadastro: ")
+            indice = validar_senha(lista_clientes, senha)
+            
             while(indice == -1):
-                cpf = input("CPF não encontrado, digite um número válido: ")
-                indice = buscar_cliente(lista_clientes, cpf)
+                senha = input("Senha inválida! Tente novamente: ")
+                indice = validar_senha(lista_clientes, senha)
+
             alterar_cliente(lista_clientes, indice)
             voltar_ao_menu_principal()              
         case 7:
-            cpf = input("Digite seu cpf: ")
-            indice = buscar_cliente(lista_clientes, cpf)
+            senha = input("Digite a sua senha para excluir sua conta: ")
+            indice = validar_senha(lista_clientes, senha)
+
+            while(indice == -1):
+                senha = input("Senha inválida! Tente novamente: ")
+                indice = validar_senha(lista_clientes, senha)
+
             confirmar_exclusao = int(input("Deseja realmente excluir sua conta (1 - Sim / 2 - Não): "))
             if (confirmar_exclusao == 1):
                 excluir_cliente(lista_clientes, indice)
@@ -93,20 +102,49 @@ def escolher_opcao():
                 exibir_aviso("Opção inválida!")  # <<< ALTERAÇÃO DE LAYOUT >>>
                 voltar_ao_menu_principal()
         case 8:
+            os.system('cls')
+            senha = input("Digite a sua senha para visualizar os dados de cadastro: ")
+            indice = validar_senha(lista_clientes, senha)
+            relatorio_cadastro_cliente(lista_clientes, indice)       
+        case 9:
             gerar_relatorio()
 
-        case 9:
+        case 10:
             gerar_arquivo_txt()
 
-        case 10:
+        case 11:
             exportar_json()
 
-        case 11:
+        case 12:
             importar_json()
 
-        case 12:
-            print('\nFinalizando o Soul Pass...')
-            finalizar_app()
+        case 13:
+            confimacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
+            while(confimacao >= 1 and confimacao <= 3):
+                if (confimacao == 1):
+                    exibir_aviso('Salvando...')
+                    time.sleep(2)
+                    exportar_json(mostrar_mensagens=False)
+                    os.system('cls')
+                    exibir_nome_soulpass()
+                    exibir_aviso('Saindo...')
+                    time.sleep(2)
+                    os.system('cls')
+                    exibir_nome_soulpass()
+                    finalizar_app()
+                elif(confimacao == 2):
+                    os.system('cls')
+                    exibir_nome_soulpass()
+                    exibir_aviso('Saindo sem salvar...')
+                    time.sleep(2)
+                    os.system('cls')
+                    exibir_nome_soulpass()
+                    finalizar_app()
+                elif(confimacao == 3):
+                    validarCadastro(opcao_cadastro=0)
+                else:
+                    print('Opção inválida! Tente novamente: ')
+                    finalizar_app()
 
         case _:
             exibir_aviso("Opção inválida! Digite um número correspondente a uma opção do menu.")  # <<< ALTERAÇÃO DE LAYOUT >>>
@@ -121,14 +159,6 @@ def finalizar_app():
 def voltar_ao_menu_principal():
     input('\nDigite uma tecla para voltar ao menu ')
     main()
-
-# Funcões Principais
-
-def main():
-    os.system('cls')
-    exibir_nome_soulpass()
-    opcoes()
-    escolher_opcao()
 
 
 # Funções Principais
@@ -206,175 +236,6 @@ def gerar_voucher():
         f"Valor total: R$ {valor_total:.2f}",
         f"Pontos restantes: {pontos:.0f}"
     )
-
-    voltar_ao_menu_principal()
-
-
-# RELATÓRIO
-def gerar_relatorio():
-    os.system('cls')
-    exibir_nome_soulpass()
-
-    print('RELATÓRIO DE VOUCHERS\n')
-
-    if len(historico) == 0:
-        print('Nenhuma conversão foi realizada por aqui.')
-    else:
-        contador = 1
-
-        for conversao in historico:
-            print(f'\nCONVERSÃO {contador}')
-            print(
-                f"PONTOS UTILIZADOS: "
-                f"{conversao['pontos_utilizados']}"
-            )
-            print(
-                f"VOUCHERS GERADOS: "
-                f"{conversao['vouchers_gerados']}"
-            )
-            print(
-                f"VALOR TOTAL: "
-                f"R$ {conversao['valor_total']:.2f}"
-            )
-            print('============================================')
-
-            contador += 1
-
-    voltar_ao_menu_principal()
-
-
-# GERAR ARQUIVO TXT
-def gerar_arquivo_txt():
-    os.system('cls')
-    exibir_nome_soulpass()
-
-    print('GERAR ARQUIVO TXT\n')
-
-    if not historico:
-        print('Nenhuma conversão foi realizada por aqui.')
-        voltar_ao_menu_principal()
-        return
-
-    arquivo = open(
-        'relatorio_vouchers.txt',
-        'w',
-        encoding='utf-8'
-    )
-
-    arquivo.write('============================================\n')
-    arquivo.write('              SOUL PASS\n')
-    arquivo.write('             NOTA FISCAL\n')
-    arquivo.write('============================================\n\n')
-
-    contador = 1
-
-    for conversao in historico:
-        arquivo.write(f'CONVERSÃO {contador}\n')
-        arquivo.write(
-            f"Pontos utilizados: "
-            f"{conversao['pontos_utilizados']}\n"
-        )
-        arquivo.write(
-            f"Vouchers gerados: "
-            f"{conversao['vouchers_gerados']}\n"
-        )
-        arquivo.write(
-            f"Valor total: "
-            f"R$ {conversao['valor_total']:.2f}\n"
-        )
-        arquivo.write(
-            '--------------------------------------------\n'
-        )
-
-        contador += 1
-
-    arquivo.close()
-
-    print('Nota fiscal gerada com sucesso!')
-    print('Consulte no arquivo: relatorio_vouchers.txt')
-
-    voltar_ao_menu_principal()
-
-
-# EXPORTAR JSON
-def exportar_json():
-    os.system('cls')
-    exibir_nome_soulpass()
-
-    print('EXPORTAR DADOS PARA JSON\n')
-
-    if len(historico) == 0:
-        print('Nenhuma conversão foi realizada por aqui.')
-        voltar_ao_menu_principal()
-        return
-
-    arquivo = open(
-        'historico_vouchers.json',
-        'w',
-        encoding='utf-8'
-    )
-
-    json.dump(
-        historico,
-        arquivo,
-        ensure_ascii=False,
-        indent=4
-    )
-
-    arquivo.close()
-
-    print('Dados exportados com sucesso!')
-    print('Nome do arquivo: historico_vouchers.json')
-
-    voltar_ao_menu_principal()
-
-
-# IMPORTAR JSON
-def importar_json():
-    global historico, quantidade_vouchers
-
-    os.system('cls')
-    exibir_nome_soulpass()
-
-    print('IMPORTAR DADOS DO JSON\n')
-
-    try:
-        arquivo = open(
-            'historico_vouchers.json',
-            'r',
-            encoding='utf-8'
-        )
-
-        historico = json.load(arquivo)
-
-        arquivo.close()
-
-        # Recalcula a quantidade total de vouchers
-        quantidade_vouchers = 0
-
-        for conversao in historico:
-            quantidade_vouchers += conversao['vouchers_gerados']
-
-        print('Dados importados com sucesso!')
-        print(
-            f'Total de conversões importadas: '
-            f'{len(historico)}'
-        )
-        print(
-            f'Total de vouchers importados: '
-            f'{quantidade_vouchers}'
-        )
-
-    except FileNotFoundError:
-        print(
-            'Arquivo historico_vouchers.json '
-            'não encontrado.'
-        )
-
-    except json.JSONDecodeError:
-        print(
-            'Erro! O arquivo JSON está inválido.'
-        )
 
     voltar_ao_menu_principal()
 
@@ -475,6 +336,7 @@ def cadastrar_cliente(lista_clientes):
         if(idade < 18):
             # <<< ALTERAÇÃO DE LAYOUT >>> Trocado o bloco de "-----" por exibir_aviso
             exibir_aviso("Você precisa ter no mínimo 18 anos para realizar o cadastro.")
+            time.sleep(3)
             return
         # while(idade < 18):
         #     print("Você precisa ter no mínimo 18 anos para realizar o cadastro!")
@@ -483,7 +345,10 @@ def cadastrar_cliente(lista_clientes):
         #     idade = calcular_idade(data_nascimento)
     except ValueError:
         # <<< ALTERAÇÃO DE LAYOUT >>>
-        exibir_aviso("Data de nascimento inválida ou não foi escrita no formato dd/mm/aaaa.", "Tente novamente!", largura=80)
+        exibir_aviso("Data de nascimento inválida ou não foi escrita no formato dd/mm/aaaa.", "Tente novamente! ", largura=80)
+        print('\n')
+        print('Voltando... \n')
+        time.sleep(4)
     else:
         dados_cliente = {
             'id': id,
@@ -497,8 +362,10 @@ def cadastrar_cliente(lista_clientes):
         lista_clientes.append(dados_cliente)
         # <<< ALTERAÇÃO DE LAYOUT >>>
         exibir_aviso("Cadastro finalizado com sucesso!", "Agora você pode acessar a nossa plataforma com a sua conta!")
+        time.sleep(3)
 
 def alterar_cliente(lista_clientes, indice):
+        os.system('cls')
         #Resgatando novos valores
         print(f"O seu nome é: {lista_clientes[indice]['Nome']}")
         novo_nome = input("Digite um novo nome: ")
@@ -524,11 +391,225 @@ def excluir_cliente(lista_clientes, indice):
     lista_clientes.pop(indice)
     exibir_aviso("Conta excluída com sucesso!")  # <<< ALTERAÇÃO DE LAYOUT >>> (era o exemplo que você mandou)
 
-lista_clientes = []
-opcao_cadastro = 0
 
-def validarCadastro(opcao_cadastro):
+def relatorio_cadastro_cliente(lista_clientes, indice):
+    
+    while(indice == -1):
+        senha = input("Senha inválida! Tente novamente: ")
+        indice = validar_senha(lista_clientes, senha)
+
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    exibir_aviso(' \n DADOS DE CADASTRO \n \n'
+
+    f'Nome -> {lista_clientes[indice]['Nome']} \n \n'
+    f'Email -> {lista_clientes[indice]['Email']} \n \n'
+    f'Usuário -> {lista_clientes[indice]['Usuário']} \n \n'
+    f'Senha -> {lista_clientes[indice]['Senha']} \n \n'
+    f'Idade -> {lista_clientes[indice]['Idade']} \n \n'
+    f'CPF -> {lista_clientes[indice]['CPF']} \n', largura=30)
+
+    confirmar_alteracao = int(input('Deseja alterar os dados do cadastro (1 - SIM / 2 - NÃO)? '))
+
+    if(confirmar_alteracao == 1):
+        senha = input("Digite a sua senha para alterar os dados de cadastro: ")
+        indice = validar_senha(lista_clientes, senha)
+                    
+        while(indice == -1):
+            senha = input("Senha inválida! Tente novamente: ")
+            indice = validar_senha(lista_clientes, senha)
+        alterar_cliente(lista_clientes, indice)
+        voltar_ao_menu_principal()
+    else:
+        voltar_ao_menu_principal()
+
+# RELATÓRIO
+def gerar_relatorio():
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    print('RELATÓRIO DE VOUCHERS\n')
+
+    if len(historico) == 0:
+        print('Nenhuma conversão foi realizada por aqui.')
+    else:
+        contador = 1
+
+        for conversao in historico:
+            exibir_aviso(f'\nCONVERSÃO {contador} \n \n'
+            
+                f"PONTOS UTILIZADOS: "
+                f"{conversao['pontos_utilizados']}"
+            
+                f"VOUCHERS GERADOS: "
+                f"{conversao['vouchers_gerados']}"
+    
+                f"VALOR TOTAL: "
+                f"R$ {conversao['valor_total']:.2f} \n", largura=80
+            )
+
+            contador += 1
+
+    voltar_ao_menu_principal()
+
+
+# GERAR ARQUIVO TXT
+def gerar_arquivo_txt():
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    print('GERAR ARQUIVO TXT\n')
+
+    if not historico:
+        print('Nenhuma conversão foi realizada por aqui.')
+        voltar_ao_menu_principal()
+        return
+
+    arquivo = open(
+        'relatorio_vouchers.txt',
+        'w',
+        encoding='utf-8'
+    )
+
+    arquivo.write('============================================\n')
+    arquivo.write('              SOUL PASS\n')
+    arquivo.write('             NOTA FISCAL\n')
+    arquivo.write('============================================\n\n')
+
+    contador = 1
+
+    for conversao in historico:
+        arquivo.write(f'CONVERSÃO {contador}\n')
+        arquivo.write(
+            f"Pontos utilizados: "
+            f"{conversao['pontos_utilizados']}\n"
+        )
+        arquivo.write(
+            f"Vouchers gerados: "
+            f"{conversao['vouchers_gerados']}\n"
+        )
+        arquivo.write(
+            f"Valor total: "
+            f"R$ {conversao['valor_total']:.2f}\n"
+        )
+        arquivo.write(
+            '--------------------------------------------\n'
+        )
+
+        contador += 1
+
+    arquivo.close()
+
+    print('Nota fiscal gerada com sucesso!')
+    print('Consulte no arquivo: relatorio_vouchers.txt')
+
+    voltar_ao_menu_principal()
+
+
+# EXPORTAR JSON
+def exportar_json(mostrar_mensagens=True):
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    if (mostrar_mensagens):
+        print('EXPORTAÇÃO DOS DADOS PARA JSON\n')
+
+    # if len(historico) == 0:
+    #     print('Nenhuma conversão foi realizada por aqui.')
+    #     voltar_ao_menu_principal()
+    #     return
+
+    dados_exportados = {
+        'Clientes': lista_clientes,
+        'Histórico': historico
+    }
+
+    arquivo = open(
+        'dados_do_cliente.json',
+        'w',
+        encoding='utf-8'
+    )
+
+    json.dump(
+        dados_exportados,
+        arquivo,
+        ensure_ascii=False,
+        indent=4
+    )
+
+    arquivo.close()
+
+    if (mostrar_mensagens):
+        print('Dados exportados com sucesso!')
+        print('Nome do arquivo: dados_do_cliente.json')
+
+    if (mostrar_mensagens):
+        voltar_ao_menu_principal()
+
+
+# IMPORTAR JSON
+def importar_json(mostrar_mensagens=True):
+    global historico, quantidade_vouchers, lista_clientes
+
+    os.system('cls')
+    exibir_nome_soulpass()
+
+    if (mostrar_mensagens):
+        print('IMPORTAÇÃO DE DADOS DO JSON\n')
+
+    try:
+        arquivo = open(
+            'dados_do_cliente.json',
+            'r',
+            encoding='utf-8'
+        )
+
+        dados_importados = json.load(arquivo)
+        arquivo.close()
+
+        lista_clientes = dados_importados['Clientes']
+        historico = dados_importados['Histórico']
+
+        # Recalcula a quantidade total de vouchers
+        quantidade_vouchers = 0
+
+        for conversao in historico:
+            quantidade_vouchers += conversao['vouchers_gerados']
+
+        if (mostrar_mensagens):
+            print('Dados importados com sucesso!')
+            print(
+                f'Total de conversões importadas: '
+                f'{len(historico)}'
+            )
+            print(
+                f'Total de vouchers importados: '
+                f'{quantidade_vouchers}'
+            )
+
+    except FileNotFoundError:
+        if (mostrar_mensagens):
+            print(
+                'Arquivo dados_do_cliente.json '
+                'não encontrado.'
+            )
+
+    except json.JSONDecodeError:
+        if (mostrar_mensagens):
+            print(
+                'Erro! O arquivo JSON está inválido.'
+            )
+    if (mostrar_mensagens):
+        voltar_ao_menu_principal()
+
+
+lista_clientes = []
+
+def validarCadastro(opcao_cadastro=0):
+
     while (opcao_cadastro != 3):
+        os.system('cls')
         exibir_nome_soulpass()
         print("-----CADASTRO DE CONTA-----\n")
         print("1 - Já sou cadastrado!")
@@ -545,23 +626,87 @@ def validarCadastro(opcao_cadastro):
                         indice_senha = validar_senha(lista_clientes, senha)
 
                         if (indice_usuario != -1 and indice_usuario == indice_senha):
+                            print('\n')
+                            print('Entrando... \n')
+                            time.sleep(2)
                             os.system('cls')
-                            return 3
+                            return
                         else:
                             # <<< ALTERAÇÃO DE LAYOUT >>>
                             exibir_aviso("Usuário ou senha incorretos.", f"Você ainda tem mais {2-i} tentativa(s).")
+                            
                 case 2:
                     cadastrar_cliente(lista_clientes)
                 case 3:
-                    print("Saindo...")
-                    finalizar_app()
+                    confimacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
+                    while(confimacao >= 1 and confimacao <= 3):
+                        if (confimacao == 1):
+                            exibir_aviso('Salvando...')
+                            time.sleep(2)
+                            exportar_json(mostrar_mensagens=False)
+                            os.system('cls')
+                            exibir_nome_soulpass()
+                            exibir_aviso('Saindo...')
+                            time.sleep(2)
+                            os.system('cls')
+                            exibir_nome_soulpass()
+                            finalizar_app()
+                        elif(confimacao == 2):
+                            os.system('cls')
+                            exibir_nome_soulpass()
+                            exibir_aviso('Saindo sem salvar...')
+                            time.sleep(2)
+                            os.system('cls')
+                            exibir_nome_soulpass()
+                            finalizar_app()
+                        elif(confimacao == 3):
+                            validarCadastro(opcao_cadastro=0)
+                        else:
+                            print('Opção inválida! Tente novamente: ')
         else:
-            exibir_aviso("Opção inválida. Tente novamente!")  # <<< ALTERAÇÃO DE LAYOUT >>>
+            exibir_aviso("Opção inválida. Tente novamente!")# <<< ALTERAÇÃO DE LAYOUT >>>
+            time.sleep(1)
+
+def verificar_conta_existente():
+    os.system('cls')
+    exibir_nome_soulpass()
+    verificar_conta = int(input('Você já possui conta na SoulPass (1 - SIM / 2 - NÃO)? '))
+    if (verificar_conta == 1):
+        importar_json(mostrar_mensagens=False)
+        for i in range (3):
+            os.system('cls')
+            exibir_nome_soulpass()
+            usuario = input("Informe seu usuário: ")
+            indice_usuario = validar_usuario(lista_clientes, usuario)
+            senha = input("Digite a senha: ")
+            indice_senha = validar_senha(lista_clientes, senha)
+        
+            if (indice_usuario != -1 and indice_usuario == indice_senha):
+                print('\n')
+                print('Entrando... \n')
+                time.sleep(2)
+                os.system('cls')
+            else:
+                # <<< ALTERAÇÃO DE LAYOUT >>>
+                os.system('cls')
+                exibir_nome_soulpass()
+                exibir_aviso("Usuário ou senha incorretos.", f"Você ainda tem mais {2-i} tentativa(s).")
+                time.sleep(2)
+                os.system('cls')
+        validarCadastro(opcao_cadastro=0)
+    elif(verificar_conta == 2):
+        importar_json(mostrar_mensagens=False)
+        validarCadastro(opcao_cadastro=0)
+    else:
+        exibir_aviso('Opção inválida! Tente novamente: ')
+        time.sleep(1)
+        verificar_conta_existente()
 
 
 # Variáveis globais
-validarCadastro(opcao_cadastro)
-pontos = float(input('Informe a quantidade de pontos: '))
 quantidade_vouchers = 0
 historico = []
+
+verificar_conta_existente()
+pontos = float(input('Informe a quantidade de pontos: '))
 main()
