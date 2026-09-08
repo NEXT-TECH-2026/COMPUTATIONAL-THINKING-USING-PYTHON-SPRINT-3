@@ -42,9 +42,7 @@ def opcoes():
     print('8 - VISUALIZAR DADOS DE CADASTRO')
     print('9 - GERAR RELATÓRIO DE VOUCHERS')
     print('10 - IMPRIMIR NOTA FISCAL DAS CONVERSÕES')
-    print('11 - EXPORTAR DADOS PARA JSON')
-    print('12 - IMPORTAR DADOS DO JSON')
-    print('13 - SAIR')
+    print('11 - SAIR')
 
 
 def escolher_opcao():
@@ -115,12 +113,6 @@ def escolher_opcao():
             gerar_arquivo_txt()
 
         case 11:
-            exportar_json()
-
-        case 12:
-            importar_json()
-
-        case 13:
             try:
                 confimacao = int(input('Deseja salvar as alterações (1 - SALVAR / 2 - NÃO SALVAR / 3 - CANCELAR)? '))
             except ValueError:
@@ -343,11 +335,6 @@ def cadastrar_cliente(lista_clientes):
             exibir_aviso("Você precisa ter no mínimo 18 anos para realizar o cadastro.")
             time.sleep(3)
             return
-        # while(idade < 18):
-        #     print("Você precisa ter no mínimo 18 anos para realizar o cadastro!")
-        #     data_digitada = input("Digite a sua data de nascimento: ")
-        #     data_nascimento = datetime.strptime(data_digitada, "%d/%m/%Y").date()
-        #     idade = calcular_idade(data_nascimento)
     except ValueError:
         # <<< ALTERAÇÃO DE LAYOUT >>>
         exibir_aviso("Data de nascimento inválida ou não foi escrita no formato dd/mm/aaaa.", "Tente novamente! ", largura=80)
@@ -447,10 +434,10 @@ def gerar_relatorio():
             exibir_aviso(f'\nCONVERSÃO {contador} \n \n'
             
                 f"PONTOS UTILIZADOS: "
-                f"{conversao['pontos_utilizados']}"
+                f"{conversao['pontos_utilizados']} \n"
             
                 f"VOUCHERS GERADOS: "
-                f"{conversao['vouchers_gerados']}"
+                f"{conversao['vouchers_gerados']} \n"
     
                 f"VALOR TOTAL: "
                 f"R$ {conversao['valor_total']:.2f} \n", largura=80
@@ -521,11 +508,6 @@ def exportar_json(mostrar_mensagens=True):
 
     if (mostrar_mensagens):
         print('EXPORTAÇÃO DOS DADOS PARA JSON\n')
-
-    # if len(historico) == 0:
-    #     print('Nenhuma conversão foi realizada por aqui.')
-    #     voltar_ao_menu_principal()
-    #     return
 
     dados_exportados = {
         'Clientes': lista_clientes,
