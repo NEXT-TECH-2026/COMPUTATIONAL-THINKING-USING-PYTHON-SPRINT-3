@@ -32,6 +32,8 @@ def main():
 
 # Funções de Navegação
 def opcoes():
+    print('SEJA BEM VINDO!!! \n')
+    print('O QUE DESEJA? \n')
     print('1 - CONSULTAR PONTOS E VOUCHERS DISPONÍVEIS')
     print('2 - GERAR VOUCHER')
     print('3 - VER HISTÓRICO DE CONVERSÕES')
@@ -692,7 +694,7 @@ def verificar_conta_existente():
         validarCadastro(opcao_cadastro=0)
     elif(verificar_conta == 2):
         importar_json(mostrar_mensagens=False)
-        validarCadastro(opcao_cadastro=0)
+        cadastrar_cliente(lista_clientes)
     else:
         exibir_aviso('Opção inválida! Tente novamente: ')
         time.sleep(1)
@@ -704,6 +706,7 @@ quantidade_vouchers = 0
 historico = []
 
 verificar_conta_existente()
+os.system('cls')
 exibir_nome_soulpass()
 pontos = float(input('Informe a quantidade de pontos: '))
 main()
